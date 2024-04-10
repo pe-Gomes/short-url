@@ -47,6 +47,20 @@ func TestGetShortURl(t *testing.T) {
 	require.WithinDuration(t, url1.UpdatedAt, url2.UpdatedAt, time.Second)
 }
 
+func TestGetShortURLBySlug(t *testing.T) {
+	user := createRandomUser(t)
+	url1 := createRandomURL(t, user)
+
+	url2, err := testStore.GetShortURLBySlug(context.Background(), url1.Slug)
+	require.NoError(t, err)
+	require.NotEmpty(t, url2)
+	require.Equal(t, url1.ID, url2.ID)
+	require.Equal(t, url1.Url, url2.Url)
+	require.Equal(t, url1.Slug, url2.Slug)
+	require.WithinDuration(t, url1.CreatedAt, url2.CreatedAt, time.Second)
+	require.WithinDuration(t, url1.UpdatedAt, url2.UpdatedAt, time.Second)
+}
+
 func TestListShortURLs(t *testing.T) {
 	user := createRandomUser(t)
 
@@ -74,6 +88,26 @@ func TestListShortURLs(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, urls2)
 	require.Len(t, urls2, 0)
+}
+
+func TestUpdateShortURL(t *testing.T) {
+	user := createRandomUser(t)
+	url1 := createRandomURL(t, user)
+
+	arg := UpdateShortURLParams{
+		ID:   url1.ID,
+		Url:  util.RandomString(10),
+		Slug: util.RandomString(6),
+	}
+
+	url2, err := testStore.UpdateShortURL(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, url2)
+	require.Equal(t, url1.ID, url2.ID)
+	require.Equal(t, arg.Url, url2.Url)
+	require.Equal(t, arg.Slug, url2.Slug)
+	require.WithinDuration(t, url1.CreatedAt, url2.CreatedAt, time.Second)
+	require.WithinDuration(t, url1.UpdatedAt, url2.UpdatedAt, time.Second)
 }
 
 func TestDeleteShortURL(t *testing.T) {

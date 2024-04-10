@@ -12,6 +12,10 @@ SELECT * FROM short_links
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE;
 
+-- name: GetShortURLBySlug :one
+SELECT * FROM short_links
+WHERE slug = $1 LIMIT 1;
+
 -- name: ListShortURLs :many
 SELECT * FROM short_links
 WHERE user_id = $1

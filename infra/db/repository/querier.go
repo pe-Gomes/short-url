@@ -14,6 +14,7 @@ type Querier interface {
 	DeleteShortURL(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	GetShortURL(ctx context.Context, id int64) (ShortLink, error)
+	GetShortURLBySlug(ctx context.Context, slug string) (ShortLink, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	ListShortURLs(ctx context.Context, arg ListShortURLsParams) ([]ShortLink, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)

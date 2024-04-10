@@ -69,6 +69,25 @@ func (q *Queries) GetShortURL(ctx context.Context, id int64) (ShortLink, error) 
 	return i, err
 }
 
+const getShortURLBySlug = `-- name: GetShortURLBySlug :one
+SELECT id, user_id, url, slug, created_at, updated_at FROM short_links
+WHERE slug = $1 LIMIT 1
+`
+
+func (q *Queries) GetShortURLBySlug(ctx context.Context, slug string) (ShortLink, error) {
+	row := q.db.QueryRow(ctx, getShortURLBySlug, slug)
+	var i ShortLink
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Url,
+		&i.Slug,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const listShortURLs = `-- name: ListShortURLs :many
 SELECT id, user_id, url, slug, created_at, updated_at FROM short_links
 WHERE user_id = $1
