@@ -7,26 +7,26 @@ package db
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createShortURL = `-- name: CreateShortURL :one
 INSERT INTO short_links (
   url,
-  slug
+  slug,
+  user_id
 ) VALUES (
-  $1, $2
+  $1, $2, $3
 ) RETURNING id, user_id, url, slug, created_at, updated_at
 `
 
 type CreateShortURLParams struct {
-	Url  string `json:"url"`
-	Slug string `json:"slug"`
+	Url    string `json:"url"`
+	Slug   string `json:"slug"`
+	UserID int64  `json:"user_id"`
 }
 
 func (q *Queries) CreateShortURL(ctx context.Context, arg CreateShortURLParams) (ShortLink, error) {
-	row := q.db.QueryRow(ctx, createShortURL, arg.Url, arg.Slug)
+	row := q.db.QueryRow(ctx, createShortURL, arg.Url, arg.Slug, arg.UserID)
 	var i ShortLink
 	err := row.Scan(
 		&i.ID,
@@ -78,9 +78,9 @@ OFFSET $3
 `
 
 type ListShortURLsParams struct {
-	UserID pgtype.Int8 `json:"user_id"`
-	Limit  int32       `json:"limit"`
-	Offset int32       `json:"offset"`
+	UserID int64 `json:"user_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 func (q *Queries) ListShortURLs(ctx context.Context, arg ListShortURLsParams) ([]ShortLink, error) {

@@ -1,9 +1,10 @@
 -- name: CreateShortURL :one
 INSERT INTO short_links (
   url,
-  slug
+  slug,
+  user_id
 ) VALUES (
-  $1, $2
+  $1, $2, $3
 ) RETURNING *;
 
 -- name: GetShortURL :one

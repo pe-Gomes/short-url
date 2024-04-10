@@ -6,17 +6,15 @@ package db
 
 import (
 	"time"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type ShortLink struct {
-	ID        int64       `json:"id"`
-	UserID    pgtype.Int8 `json:"user_id"`
-	Url       string      `json:"url"`
-	Slug      string      `json:"slug"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt time.Time   `json:"updated_at"`
+	ID        int64     `json:"id"`
+	UserID    int64     `json:"user_id"`
+	Url       string    `json:"url"`
+	Slug      string    `json:"slug"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type User struct {
