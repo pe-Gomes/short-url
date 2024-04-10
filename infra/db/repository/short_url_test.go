@@ -9,9 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomURL(t *testing.T) ShortLink {
-	user := createRandomUser(t)
-
+func createRandomURL(t *testing.T, user User) ShortLink {
 	arg := CreateShortURLParams{
 		Url:    util.RandomString(10),
 		Slug:   util.RandomString(6),
@@ -31,11 +29,13 @@ func createRandomURL(t *testing.T) ShortLink {
 }
 
 func TestCreateShortURL(t *testing.T) {
-	createRandomURL(t)
+	user := createRandomUser(t)
+	createRandomURL(t, user)
 }
 
 func TestGetShortURl(t *testing.T) {
-	url1 := createRandomURL(t)
+	user := createRandomUser(t)
+	url1 := createRandomURL(t, user)
 
 	url2, err := testStore.GetShortURL(context.Background(), url1.ID)
 	require.NoError(t, err)
@@ -48,13 +48,42 @@ func TestGetShortURl(t *testing.T) {
 }
 
 func TestListShortURLs(t *testing.T) {
-	_ = createRandomURL(t)
-	_ = createRandomURL(t)
+	user := createRandomUser(t)
 
-	arg := ListShortURLsParams{Limit: 2, Offset: 0}
+	createRandomURL(t, user)
+	createRandomURL(t, user)
+
+	user2 := createRandomUser(t)
+
+	arg := ListShortURLsParams{Limit: 2, Offset: 0, UserID: user.ID}
 
 	urls, err := testStore.ListShortURLs(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, urls)
 	require.Len(t, urls, 2)
+
+	for _, url := range urls {
+		require.NotEmpty(t, url)
+		require.Equal(t, url.UserID, user.ID)
+		require.NotEqual(t, url.UserID, user2.ID)
+	}
+
+	arg2 := ListShortURLsParams{Limit: 2, Offset: 0, UserID: user2.ID}
+
+	urls2, err := testStore.ListShortURLs(context.Background(), arg2)
+	require.NoError(t, err)
+	require.Empty(t, urls2)
+	require.Len(t, urls2, 0)
+}
+
+func TestDeleteShortURL(t *testing.T) {
+	user := createRandomUser(t)
+	url1 := createRandomURL(t, user)
+
+	err := testStore.DeleteShortURL(context.Background(), url1.ID)
+	require.NoError(t, err)
+
+	url2, err := testStore.GetShortURL(context.Background(), url1.ID)
+	require.Error(t, err)
+	require.Empty(t, url2)
 }
