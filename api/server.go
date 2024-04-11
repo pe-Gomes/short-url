@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	db "github.com/pe-Gomes/short-url/infra/db/repository"
 	"github.com/pe-Gomes/short-url/util"
@@ -24,6 +25,10 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 
 func (server *Server) setupRouter() {
 	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowHeaders:    []string{"*"},
+	}))
 
 	router.GET("/status", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -35,6 +40,10 @@ func (server *Server) setupRouter() {
 	router.GET("/users/:email", server.getUserByEmail)
 	router.GET("/users", server.listUsers)
 	router.DELETE("/users/:id", server.deleteUserById)
+
+	router.POST("/url", server.createShortURL)
+	router.GET("/:slug", server.getShortURLBySlug)
+	router.GET("/url", server.listURLByUser)
 
 	server.router = router
 }

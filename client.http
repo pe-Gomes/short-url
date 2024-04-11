@@ -15,3 +15,20 @@ GET http://localhost:8080/users?page=1&page_size=5
 
 ###
 DELETE http://localhost:8080/users/6
+
+### CREATE URL
+POST http://localhost:8080/url
+Content-Type: application/json
+
+{
+  "url": "https://www.google.com",
+  "slug": "test",
+  "user_id": 20
+}
+
+### GET URL BY SLUG
+GET http://localhost:8080/test
+
+
+### GET URLs BY USER
+GET http://localhost:8080/url?user_id=32&page=1&page_size=10
