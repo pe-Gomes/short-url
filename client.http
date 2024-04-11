@@ -1,0 +1,17 @@
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@email.com",
+  "password": "password321"
+}
+
+###
+GET http://localhost:8080/users/john@email.com
+
+###
+GET http://localhost:8080/users?page=1&page_size=5
+
+###
+DELETE http://localhost:8080/users/6
